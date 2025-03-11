@@ -1,0 +1,38 @@
+name: Playwright Tests  # Название CI
+
+on:
+  push:
+    branches:
+      - main  # Запуск при пуше в main
+  pull_request:
+    branches:
+      - main  # Запуск при создании PR в main
+  workflow_dispatch:  # Возможность запуска вручную
+
+jobs:
+  test:
+    runs-on: ubuntu-latest  # Используем Ubuntu
+
+    steps:
+      - name: 📥 Клонируем репозиторий
+        uses: actions/checkout@v4
+
+      - name: 🏗️ Устанавливаем Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18  # Версия Node.js
+
+      - name: 📦 Устанавливаем зависимости
+        run: npm install
+
+      - name: 🖥️ Устанавливаем Playwright
+        run: npx playwright install --with-deps
+
+      - name: 🚀 Запускаем Playwright-тесты
+        run: npx playwright test --reporter=html,json
+
+      - name: 📦 Сохраняем отчёт как артефакт
+        uses: actions/upload-artifact@v4
+        with:
+          name: Playwright-Report
+          path: playwright-report/
